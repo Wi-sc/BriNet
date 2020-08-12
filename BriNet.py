@@ -239,14 +239,12 @@ class ResNet(nn.Module):
         
         query_feature_maps = query_feature_maps.view(1, batch*channel, qh, qw)
 
-        sup_conv_13 = self.pooling13(support_feature_maps_masked)
-        sup_conv_13 = F.avg_pool2d(support_feature_maps_masked, kernel_size=[h, 15], stride=(h, 15), padding=0)
+        sup_conv_13 = F.adaptive_avg_pool2d(support_feature_maps_masked, output_size=[1,3])
         sup_conv_13 = sup_conv_13.view(batch*channel, 1, 1, 3)
         correlation_feature_map_1 = F.conv2d(input=query_feature_maps, weight=sup_conv_13, stride=1, padding=(0, 1), groups=batch*channel)
         correlation_feature_map += correlation_feature_map_1.view(batch, channel, qh, qw)
         
-        sup_conv_31= self.pooling31(support_feature_maps_masked)
-        sup_conv_31 = F.avg_pool2d(support_feature_maps_masked, kernel_size=[15, w], stride=(15, w), padding=0)
+        sup_conv_31 = F.adaptive_avg_pool2d(support_feature_maps_masked, output_size=[3, 1])
         sup_conv_31 = sup_conv_31.view(batch*channel, 1, 3, 1)
         correlation_feature_map_2 = F.conv2d(input=query_feature_maps, weight=sup_conv_31, stride=1, padding=(1, 0), groups=batch*channel)
         correlation_feature_map += correlation_feature_map_2.view(batch, channel, qh, qw)
