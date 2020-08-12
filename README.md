@@ -46,11 +46,6 @@ python test.py -fold=0 -input_size=[353,353] -gpu=0 -checkpoint_dir='./checkpoin
 ```
 
 
-## License
-
-The code and models here are available under the same license as Caffe (BSD-2) and the Caffe-bundled models (that is, unrestricted use; see the BVLC model license).
-
-
 ## Contact
 
 For further questions, you can leave them as issues in the repository, or contact the authors directly:
