@@ -14,51 +14,35 @@ If you find BriNet useful in your research, please consider to cite:
  ```
 
 ## Training
-For training your own models, we have included all prototxts in `${OSLSM_HOME}/OSLSM/os_semantic_segmentation/training` directory and the vgg pre-trained model can be found in `snapshots/os_pretrained.caffemodel`.
 
 You will also need to
 
 1) Download/Prepare SBD dataset (http://home.bharathh.info/pubs/codes/SBD/download.html).
+2) Download pre-trained ResNet50 from pytorch model zoo.
 
-2) Set `SBD_PATH` in `${OSLSM_HOME}/OSLSM/code/db_path.py`
-
-3) Set the profile to `fold${FOLD_ID}\_train` for our data layer (check the prototxt files and `${OSLSM_HOME}/OSLSM/code/ss_datalayer.py`) to work.
-
-## Testing
-Download PASCAL VOC dataset: http://host.robots.ox.ac.uk/pascal/VOC/voc2012/
-
-Download trained models from: https://google/drive
-
-We assume you have downloaded the repository into ./checkpoint path.
 
 ```shell 
-cd ${OSLSM_HOME}
-python train.py
+cd BriNet
+
+# if you want to use default setting
+python train.py -fold=0
+
+# if you want to use default setting
+python train.py -fold=0 -input_size=[353,353] -gpu=0 -checkpoint_dir='./checkpoint'
 ```
 
+## Testing
 
-Update the `$PYTHONPATH`: 
+Download trained models from: https://google/drive or load your trained model. We assume you have downloaded the repository into ./checkpoint path.
 
-```shell
-export PYTHONPATH=${OSLSM_HOME}/OSLSM/code:${OSLSM_HOME}/python:$PYTHONPATH
-```
+```shell 
+cd BriNet
 
-Set `CAFFE_PATH=${OSLSM_HOME}` and `PASCAL_PATH` in `${OSLSM_HOME}/OSLSM/code/db_path.py` file
+# if you want to use default setting
+python test.py -fold=0
 
-Run the following to test the models in one-shot setting:
-
-```shell
-cd ${OSLSM_HOME}/OSLSM/os_semantic_segmentation
-python test.py deploy_1shot.prototxt ${TRAINED_MODEL} ${RESULTS_PATH} 1000 fold${FOLD_ID}_1shot_test
-```
-
-Where ${FOLD_ID} can be 0,1,2, or 3 and ${TRAIN_MODEL} is the path to the trained caffe model. Please note that we have included different caffe models for each ${FOLD_ID}.
-
-Simillarly, run the following to test the models in 5-shot setting:
-
-```shell
-cd ${OSLSM_HOME}/OSLSM/os_semantic_segmentation
-python test.py deploy_5shot.prototxt ${TRAINED_MODEL} ${RESULTS_PATH} 1000 fold${FOLD_ID}_5shot_test
+# if you want to use default setting
+python test.py -fold=0 -input_size=[353,353] -gpu=0 -checkpoint_dir='./checkpoint'
 ```
 
 

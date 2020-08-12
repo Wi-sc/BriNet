@@ -4,7 +4,7 @@ import numpy as np
 import torch.nn.functional as F
 from decoder_module import build_decoder
 # from nonlocal_block import build_nonlocal_block
-from co_excitation_block import build_co_excitation_block
+from Information_Exchange_Module import build_co_excitation_block
 # from co_excitation_block import build_channel_gate_block
 
 # code of dilated convolution part is referenced from https://github.com/speedinghzl/Pytorch-Deeplab
