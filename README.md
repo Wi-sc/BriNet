@@ -11,40 +11,37 @@ You can find our paper at https://arxiv.org/abs/205.03410
 If you find BriNet useful in your research, please consider to cite:
 
 ```
-@inproceedings{shaban2017one,
- title={One-Shot Learning for Semantic Segmentation},
- author={Shaban, Amirreza and Bansal, Shray and Liu, Zhen and Essa, Irfan and Boots, Byron},
- journal={British Machine Vision Conference ({BMVC})},
- year={2017}
-}
  ```
 
-## Instructions for Testing (tested on Ubuntu 16.04)
-We assume you have downloaded the repository into ${OSLSM_HOME} path.
+## Training
+For training your own models, we have included all prototxts in `${OSLSM_HOME}/OSLSM/os_semantic_segmentation/training` directory and the vgg pre-trained model can be found in `snapshots/os_pretrained.caffemodel`.
 
-Install Caffe prerequisites and build the Caffe code (with PyCaffe). See http://caffe.berkeleyvision.org/installation.html for more details
+You will also need to
+
+1) Download/Prepare SBD dataset (http://home.bharathh.info/pubs/codes/SBD/download.html).
+
+2) Set `SBD_PATH` in `${OSLSM_HOME}/OSLSM/code/db_path.py`
+
+3) Set the profile to `fold${FOLD_ID}\_train` for our data layer (check the prototxt files and `${OSLSM_HOME}/OSLSM/code/ss_datalayer.py`) to work.
+
+## Testing
+Download PASCAL VOC dataset: http://host.robots.ox.ac.uk/pascal/VOC/voc2012/
+
+Download trained models from: https://google/drive
+
+We assume you have downloaded the repository into ./checkpoint path.
 
 ```shell 
 cd ${OSLSM_HOME}
 python train.py
 ```
 
-If you prefer Make, set BLAS to your desired one in Makefile.config. Then run:
-
-```shell
-cd ${OSLSM_HOME}
-python test.py
-```
 
 Update the `$PYTHONPATH`: 
 
 ```shell
 export PYTHONPATH=${OSLSM_HOME}/OSLSM/code:${OSLSM_HOME}/python:$PYTHONPATH
 ```
-
-Download PASCAL VOC dataset: http://host.robots.ox.ac.uk/pascal/VOC/voc2012/
-
-Download trained models from: https://gtvault-my.sharepoint.com/:u:/g/personal/ashaban6_gatech_edu/EXS5Cj8nrL9CnIJjv5YkhEgBQt9WAcIabDQv22AERZEeUQ
 
 Set `CAFFE_PATH=${OSLSM_HOME}` and `PASCAL_PATH` in `${OSLSM_HOME}/OSLSM/code/db_path.py` file
 
@@ -64,15 +61,6 @@ cd ${OSLSM_HOME}/OSLSM/os_semantic_segmentation
 python test.py deploy_5shot.prototxt ${TRAINED_MODEL} ${RESULTS_PATH} 1000 fold${FOLD_ID}_5shot_test
 ```
 
-For training your own models, we have included all prototxts in `${OSLSM_HOME}/OSLSM/os_semantic_segmentation/training` directory and the vgg pre-trained model can be found in `snapshots/os_pretrained.caffemodel`.
-
-You will also need to
-
-1) Download/Prepare SBD dataset (http://home.bharathh.info/pubs/codes/SBD/download.html).
-
-2) Set `SBD_PATH` in `${OSLSM_HOME}/OSLSM/code/db_path.py`
-
-3) Set the profile to `fold${FOLD_ID}\_train` for our data layer (check the prototxt files and `${OSLSM_HOME}/OSLSM/code/ss_datalayer.py`) to work.
 
 ## License
 
