@@ -11,7 +11,7 @@ import torch
 import torch.nn as nn
 import cv2
 import numpy as np
-from dataset2 import Dataset as dataset_val
+from dataset_val import Dataset as dataset_val
 from BriNet import network
 parser = argparse.ArgumentParser()
 
@@ -109,7 +109,7 @@ valset = dataset_val(data_dir=args.data_dir, mask_dir=args.mask_dir, fold=args.f
 valloader = data.DataLoader(valset, batch_size=1, shuffle=False, num_workers=4, drop_last=False)
 for i_iter, batch_val in enumerate(valloader):
     model.load_state_dict(model_dic, strict=False)
-    query_img0, query_img1, query_img2, query_mask, sup_img, sup_mask, sample_class,query_name,support_name = batch_val
+    query_img0, query_img1, query_img2, query_mask, sup_img, sup_mask, sample_class = batch_val
     query_img0 = query_img0.cuda()
     query_img1 = query_img1.cuda()
     query_img2 = query_img2.cuda()
@@ -145,8 +145,8 @@ for i_iter, batch_val in enumerate(valloader):
         mask_2 = nn.functional.softmax(mask_2, dim=1)
         final_mask = mask_1 + mask_0 + mask_2
         final_mask = nn.functional.softmax(final_mask,dim=1)
-        res_mask=model(sup_img, query_img1, final_mask[:,1:2,:,:])
-        res_mask=nn.functional.interpolate(res_mask, size=(sh, sw), mode='bilinear', align_corners=True)
+        res_mask = model(sup_img, query_img1, final_mask[:,1:2,:,:])
+        res_mask = nn.functional.interpolate(res_mask, size=(sh, sw), mode='bilinear', align_corners=True)
         loss=cross_entropy_calc_all(res_mask, sup_mask[:,0,:,:])
         optimizer.zero_grad()
         loss.backward()

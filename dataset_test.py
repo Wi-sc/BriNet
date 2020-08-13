@@ -11,9 +11,10 @@ import numpy as np
 from torch.utils.data import DataLoader
 
 class Dataset(object):
-    def __init__(self, data_dir, name_idx, input_size=[224, 224], normalize_mean=[0.485, 0.456, 0.406],
+    def __init__(self, data_dir, name_idx, fold, input_size=[224, 224], normalize_mean=[0.485, 0.456, 0.406],
                  normalize_std=[0.229, 0.224, 0.225]):
         self.data_dir = data_dir
+        self.fold = fold
         self.pair_list = self.get_pair_list()
         self.input_size = input_size
         self.normalize_mean = normalize_mean
@@ -22,49 +23,52 @@ class Dataset(object):
 
     def get_pair_list(self):
         pair_list = []
-        f = open('./test_set.txt')
+        cls_list = []
+        f = open(os.path.join(self.mask_dir, 'train', 'split%1d_train.txt' %fold))
+        f = open('./data/Binary_map_aug/val/val_set.txt')
         line = f.readline()
         while line:
-#             filelist = os.listdir(os.path.join(self.data_dir, line[:-1]))
-            for sup_name in range(1, 11):
-                for query_name in range(1, 11):
-                    if(sup_name!=query_name):
-                        pair_list.append([line[:-1], line[:-1]+'/'+str(sup_name), line[:-1]+'/'+str(query_name)])
+            sup_name, query_name, cat = item.split()
+            cat = int(cat)
+            pair_list.append([query_name, sup_name, cat])
             line = f.readline()
         return pair_list
 
     def __getitem__(self, index):
+        query_name = self.pair_list[index][0]
         support_name = self.pair_list[index][1]
-        query_name = self.pair_list[index][2]
-        class_name = self.pair_list[index][0]  # random sample a class in this img
+        class_name = self.pair_list[index][2]  # random sample a class in this img
         support_mask = Image.open(os.path.join(self.data_dir, support_name+'.png')).convert('1')
         support_img = Image.open(os.path.join(self.data_dir, support_name+'.jpg')).convert("RGB")
         query_mask = Image.open(os.path.join(self.data_dir, query_name+'.png')).convert('1')
         query_img = Image.open(os.path.join(self.data_dir, query_name+'.jpg')).convert("RGB")
         support_img, support_mask = self.image_process(self.input_size, support_img, support_mask)
-        query_img, query_mask = self.image_process(self.input_size, query_img, query_mask)
-        return query_img, query_mask, support_img, support_mask, self.name_idx[class_name]
+        query_img0, query_img1, query_img2, query_mask = self.image_process(self.input_size, query_img, query_mask)
+        return query_img0, query_img1, query_img2, query_mask, support_img, support_mask, class_name
 
     def image_process(self, input_size, image, mask):
-        # Resize rand crop
-#         scale_rate = random.uniform(1,1.5)
-#         scale_size = int(input_size[0]*scale_rate)
-        resize = transforms.Resize(size=input_size, interpolation=Image.BILINEAR)
-        image = resize(image)
-        resize = transforms.Resize(size=input_size, interpolation=Image.NEAREST)
-        mask = resize(mask)
+        h, w =input_size
+        #h,w=image.size
+        resize=transforms.Resize(size=(h, w),interpolation=Image.NEAREST)
+        mask=resize(mask)
+        resize=transforms.Resize(size=(h, w),interpolation=Image.BILINEAR)
+        image0=resize(image)
 
-        # Resize
-#         scale_size = input_size
+        # mutil-scale evaluation ([305, 305], [353,353], [473, 473])
+        resize=transforms.Resize(size=(305, 305),interpolation=Image.BILINEAR)
+        image1=resize(image)
         
-        assert mask.size == image.size
-        image = TF.to_tensor(image)
-        image = TF.normalize(image, self.normalize_mean, self.normalize_std)
-        mask = np.asarray(mask)
-        mask = np.where(mask>0, 1, 0)
-        mask = np.float32(mask)
+        resize=transforms.Resize(size=(473, 473),interpolation=Image.BILINEAR)
+        image2=resize(image)
+        
+        image0 = TF.to_tensor(image0)
+        image0 = TF.normalize(image0, self.normalize_mean, self.normalize_std)
+        image1 = TF.to_tensor(image1)
+        image1 = TF.normalize(image1, self.normalize_mean, self.normalize_std)
+        image2 = TF.to_tensor(image2)
+        image2 = TF.normalize(image2, self.normalize_mean, self.normalize_std)
         mask = TF.to_tensor(mask)
-        return image, mask
+        return image0, image1, image2, mask
 
         
 
