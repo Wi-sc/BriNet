@@ -11,6 +11,14 @@ You can find our paper at https://arxiv.org/abs/2008.06226
 If you find BriNet useful in your research, please consider to cite:
 
 ```
+@misc{yang2020brinet,
+    title={BriNet: Towards Bridging the Intra-class and Inter-class Gaps in One-Shot Segmentation},
+    author={Xianghui Yang and Bairun Wang and Kaige Chen and Xinchi Zhou and Shuai Yi and Wanli Ouyang and Luping Zhou},
+    year={2020},
+    eprint={2008.06226},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV}
+}
  ```
 
 ## Training
