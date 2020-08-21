@@ -43,9 +43,9 @@ class ChannelGate(nn.Module):
         scale = torch.sigmoid( channel_att_sum ).unsqueeze(2).unsqueeze(3)
         return scale
     
-class co_excitation_block(nn.Module):
+class IEM(nn.Module):
     def __init__(self, inplanes):
-        super(co_excitation_block, self).__init__()
+        super(IEM, self).__init__()
 
         self.sub_sample = False
 
@@ -140,8 +140,8 @@ class co_excitation_block(nn.Module):
 
         return act_q, act_s
     
-def build_co_excitation_block(inplanes):
-    return co_excitation_block(inplanes)
+def build_IEM(inplanes):
+    return IEM(inplanes)
 
 def build_channel_gate_block(inplanes):
     return ChannelGate(inplanes)

@@ -2,9 +2,9 @@ import torch.nn as nn
 import torch
 import numpy as np
 import torch.nn.functional as F
-from decoder_module import build_decoder
+from decoder import build_decoder
 # from nonlocal_block import build_nonlocal_block
-from Information_Exchange_Module import build_co_excitation_block
+from IEM import build_IEM
 # from co_excitation_block import build_channel_gate_block
 
 # code of dilated convolution part is referenced from https://github.com/speedinghzl/Pytorch-Deeplab
@@ -121,7 +121,7 @@ class ResNet(nn.Module):
             nn.ReLU(inplace=True),
             nn.Dropout2d(p=0.5)
         )
-        self.co_excitation_block = build_co_excitation_block(256)
+        self.IEM = build_IEM(256)
         self.layer5 = nn.Sequential(
             nn.Conv2d(in_channels=256+256, out_channels=256, kernel_size=3, stride=1, padding=1, bias=True),
             nn.ReLU(inplace=True),
@@ -231,7 +231,7 @@ class ResNet(nn.Module):
         support_feature_maps_masked = support_mask * support_feature_maps
         area = F.avg_pool2d(support_mask, [h, w]) * h * w + 5e-5
 
-        query_feature_maps, support_feature_maps_masked = self.co_excitation_block(query_feature_maps, support_feature_maps_masked)
+        query_feature_maps, support_feature_maps_masked = self.IEM(query_feature_maps, support_feature_maps_masked)
         
         sup_conv_1 = F.avg_pool2d(support_feature_maps_masked, [h, w])
         sup_conv_1 = sup_conv_1.expand(-1, -1, query_feature_maps.shape[-2], query_feature_maps.shape[-1])

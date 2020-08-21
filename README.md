@@ -3,7 +3,7 @@ By Xianghui Yang, Bairun Wang, Kaige Chen, Xinchi Zhou, Shuai Yi, Wanli Ouyang, 
 
 ## Paper
 
-You can find our paper at https://arxiv.org/abs/205.03410
+You can find our paper at https://arxiv.org/abs/2008.06226
 
 
 ## Citation
