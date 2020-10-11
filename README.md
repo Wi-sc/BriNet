@@ -41,7 +41,7 @@ python train.py -fold=0 -input_size=[353,353] -gpu=0 -checkpoint_dir='./checkpoi
 
 ## Testing
 
-Download trained models or load your trained model. We assume you have downloaded the repository into ./checkpoint path.
+Download trained models or load your trained model (https://drive.google.com/file/d/1Om--IWIP0dZUx1ckEYhZS8utu5sZRvu6/view?usp=sharing). We assume you have downloaded the repository into ./checkpoint path.
 
 ```shell 
 cd BriNet
