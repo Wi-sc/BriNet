@@ -115,7 +115,7 @@ valloader = data.DataLoader(valset, batch_size=args.val_batch_size, shuffle=Fals
 save_pred_every =len(trainloader)
 print('fold: %d Train: %d Val: %d'%(args.fold, len(trainset), len(valset)))
 
-optimizer = optim.SGD([{'params': get_10x_lr_params(model), 'lr': args.lr}], lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
+optimizer = optim.SGD([{'params': get_lr_params(model), 'lr': args.lr}], lr=args.lr, momentum=args.momentum, weight_decay=args.weight_decay)
 
 
 best_iou = 0.45
