@@ -11,7 +11,7 @@ from Dataset_train import Dataset as dataset_train
 from Dataset_val import Dataset as dataset_val
 import os
 import torch
-from Network import network
+from BriNet import network
 from torch.utils.tensorboard import SummaryWriter
 import torch.nn as nn
 import numpy as np
