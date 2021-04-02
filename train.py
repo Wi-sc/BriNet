@@ -125,11 +125,11 @@ history_doc = {'train loss':[],
            'train auxiliary loss':[], 
            'val loss':[], 
            'val iou':[], 
-           category[args.fold][0], 
-           category[args.fold][1], 
-           category[args.fold][2], 
-           category[args.fold][3], 
-           category[args.fold][4]
+           category[args.fold][0]:[], 
+           category[args.fold][1]:[], 
+           category[args.fold][2]:[], 
+           category[args.fold][3]:[], 
+           category[args.fold][4]:[]
             }
 # history_doc = pd.read_csv(os.path.join(checkpoint_dir, 'train_log.csv'))
 
