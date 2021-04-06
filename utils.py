@@ -62,7 +62,7 @@ def get_lr_params(model):
     """
     b = []
     b.append(model.module.channel_compress.parameters())
-    b.append(model.module.co_excitation_block.parameters())
+    b.append(model.module.IEM.parameters())
     b.append(model.module.layer5.parameters())
     b.append(model.module.skip1.parameters())
     b.append(model.module.skip2.parameters())

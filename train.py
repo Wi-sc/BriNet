@@ -7,15 +7,14 @@ import torch.nn.functional as F
 import tqdm
 import random
 import argparse
-from Dataset_train import Dataset as dataset_train
-from Dataset_val import Dataset as dataset_val
+from dataset_train import Dataset as dataset_train
+from dataset_val import Dataset as dataset_val
 import os
 import torch
 from BriNet import network
 from torch.utils.tensorboard import SummaryWriter
 import torch.nn as nn
 import numpy as np
-from args import args
 import pandas as pd
 
 parser = argparse.ArgumentParser()
@@ -48,7 +47,7 @@ parser.add_argument('-train_batch_size',
                     type=int,
                     help='train batch size',
                     default='16')
-parser.add_argument('-val batch size',
+parser.add_argument('-val_batch_size',
                     type=int,
                     help='val batch size',
                     default='16')
@@ -96,8 +95,8 @@ cudnn.enabled = True
 model = network()
 
 #load resnet50 preatrained parameter
-model = load_resnet_param(model, stop_layer='fc', layer_num=50)
-model=nn.DataParallel(model,[0,1])
+model = load_resnet_param(model, stop_layer='layer4', layer_num=50)
+model = nn.DataParallel(model,[0])
 
 # disable the  gradients of not optomized layers
 turn_off(model)
@@ -106,10 +105,10 @@ if not os.path.exists(checkpoint_dir):
     os.makedirs(os.path.join(checkpoint_dir))
 
 
-trainset = dataset_train(data_dir=args.data_dir, fold=args.fold, input_size=args.input_size)
+trainset = dataset_train(data_dir=args.data_dir, mask_dir=args.mask_dir, fold=args.fold, qinput_size=args.input_size, sinput_size=args.input_size)
 trainloader = data.DataLoader(trainset, batch_size=args.train_batch_size, shuffle=True, num_workers=4)
 
-valset = dataset_val(data_dir=args.data_dir, fold=args.fold, input_size=args.input_size)
+valset = dataset_val(data_dir=args.data_dir, mask_dir=args.mask_dir, fold=args.fold, input_size=args.input_size)
 valloader = data.DataLoader(valset, batch_size=args.val_batch_size, shuffle=False, num_workers=4, drop_last=False)
 
 save_pred_every =len(trainloader)
@@ -144,7 +143,7 @@ for epoch in range(0, args.num_epoch):
     begin_time = time.time()
 #     tqdm_gen = tqdm.tqdm(trainloader)
     for i_iter, batch in enumerate(trainloader):
-        query_img, query_mask, support_img, support_mask, sample_class, index = batch
+        query_img, query_mask, support_img, support_mask, sample_class = batch
         query_img = query_img.cuda()
         support_img = support_img.cuda()
         support_mask = support_mask.cuda()
@@ -182,7 +181,7 @@ for epoch in range(0, args.num_epoch):
         all_inter, all_union, all_predict = [0] * 5, [0] * 5, [0] * 5
         for i_iter, batch_ in enumerate(valloader):
 
-            query_img, query_mask, support_img, support_mask, sample_class, index = batch_
+            query_img, query_mask, support_img, support_mask, sample_class = batch_
             
             query_img = query_img.cuda()
             support_img = support_img.cuda()

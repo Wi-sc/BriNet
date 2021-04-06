@@ -11,22 +11,22 @@ import numpy as np
 from torch.utils.data import DataLoader
 
 class Dataset(object):
-    def __init__(self, data_dir, name_idx, input_size=[224, 224], normalize_mean=[0.485, 0.456, 0.406],
+    def __init__(self, data_dir, mask_dir, fold, input_size=[224, 224], normalize_mean=[0.485, 0.456, 0.406],
                  normalize_std=[0.229, 0.224, 0.225]):
         self.data_dir = data_dir
+        self.fold=fold
         self.pair_list = self.get_pair_list()
         self.input_size = input_size
         self.normalize_mean = normalize_mean
         self.normalize_std = normalize_std
-        self.name_idx=name_idx
-
+        
     def get_pair_list(self):
         pair_list = []
         cls_list = []
-        f = open('./data/Binary_map_aug/val/val_set.txt')
+        f = open('./data/Binary_map_aug/val/split%1d_val.txt' %self.fold)
         line = f.readline()
         while line:
-            sup_name, query_name, cat = item.split()
+            sup_name, query_name, cat = line.split()
             cat = int(cat)
             pair_list.append([query_name, sup_name, cat])
             line = f.readline()
@@ -36,9 +36,9 @@ class Dataset(object):
         query_name = self.pair_list[index][0]
         support_name = self.pair_list[index][1]
         class_name = self.pair_list[index][2]  # random sample a class in this img
-        support_mask = Image.open(os.path.join(self.data_dir, support_name+'.png')).convert('1')
+        support_mask = Image.open(os.path.join(self.mask_dir, support_name+'.png')).convert('1')
         support_img = Image.open(os.path.join(self.data_dir, support_name+'.jpg')).convert("RGB")
-        query_mask = Image.open(os.path.join(self.data_dir, query_name+'.png')).convert('1')
+        query_mask = Image.open(os.path.join(self.mask_dir, query_name+'.png')).convert('1')
         query_img = Image.open(os.path.join(self.data_dir, query_name+'.jpg')).convert("RGB")
         support_img, support_mask = self.image_process(self.input_size, support_img, support_mask)
         query_img, query_mask = self.image_process(self.input_size, query_img, query_mask)
