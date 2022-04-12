@@ -14,6 +14,7 @@ class Dataset(object):
     def __init__(self, data_dir, mask_dir, fold, input_size=[224, 224], normalize_mean=[0.485, 0.456, 0.406],
                  normalize_std=[0.229, 0.224, 0.225]):
         self.data_dir = data_dir
+        self.mask_dir = mask_dir
         self.fold=fold
         self.pair_list = self.get_pair_list()
         self.input_size = input_size
