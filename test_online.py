@@ -11,7 +11,7 @@ import torch
 import torch.nn as nn
 import cv2
 import numpy as np
-from dataset_val import Dataset as dataset_val
+from dataset_test import Dataset as dataset_test
 from BriNet import network
 parser = argparse.ArgumentParser()
 
