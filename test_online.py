@@ -100,15 +100,15 @@ def get_parameters(f):
         yield y
 
 optimizer=optim.SGD(get_parameters(model), lr=args.lr, weight_decay=0.0005)
-all_inter, all_union,all_predict=[0]*5, [0]*5, [0]*5
+all_inter, all_union, all_predict=[0]*5, [0]*5, [0]*5
 
 model.cuda()
 model = model.eval()
 
-valset = dataset_val(data_dir=args.data_dir, mask_dir=args.mask_dir, fold=args.fold, input_size=args.input_size)
-valloader = data.DataLoader(valset, batch_size=1, shuffle=False, num_workers=4, drop_last=False)
+valset = dataset_test(data_dir=args.data_dir, mask_dir=args.mask_dir, fold=args.fold, input_size=args.input_size)
+valloader = data.DataLoader(valset, batch_size=1, shuffle=False, num_workers=0, drop_last=False)
 for i_iter, batch_val in enumerate(valloader):
-    model.load_state_dict(model_dic, strict=False)
+    # model.load_state_dict(model_dic, strict=False)
     query_img0, query_img1, query_img2, query_mask, sup_img, sup_mask, sample_class = batch_val
     query_img0 = query_img0.cuda()
     query_img1 = query_img1.cuda()
@@ -134,9 +134,9 @@ for i_iter, batch_val in enumerate(valloader):
                 break
         
         model = model.train()
-        mask_0 = model(query_img0, sup_img, sup_mask)
-        mask_1 = model(query_img1, sup_img, sup_mask)
-        mask_2 = model(query_img2, sup_img, sup_mask)
+        mask_0, _ = model(query_img0, sup_img, sup_mask)
+        mask_1, _ = model(query_img1, sup_img, sup_mask)
+        mask_2, _ = model(query_img2, sup_img, sup_mask)
         mask_0 = nn.functional.interpolate(mask_0, size=(qh,qw), mode='bilinear', align_corners=True)
         mask_0 = nn.functional.softmax(mask_0, dim=1)
         mask_1 = nn.functional.interpolate(mask_1, size=(qh,qw), mode='bilinear', align_corners=True)
@@ -145,7 +145,7 @@ for i_iter, batch_val in enumerate(valloader):
         mask_2 = nn.functional.softmax(mask_2, dim=1)
         final_mask = mask_1 + mask_0 + mask_2
         final_mask = nn.functional.softmax(final_mask,dim=1)
-        res_mask = model(sup_img, query_img1, final_mask[:,1:2,:,:])
+        res_mask, _ = model(sup_img, query_img1, final_mask[:,1:2,:,:])
         res_mask = nn.functional.interpolate(res_mask, size=(sh, sw), mode='bilinear', align_corners=True)
         loss = cross_entropy_calc(res_mask, sup_mask[:,0,:,:])
         optimizer.zero_grad()
@@ -170,10 +170,10 @@ for i_iter, batch_val in enumerate(valloader):
         inter_list, union_list, _, num_predict_list = get_iou(query_mask.cpu().long(), pred)
 
     for j in range(query_mask.shape[0]):
-        all_inter[sample_class[j]-(args.fold*5)]+=inter_list[j]
-        all_union[sample_class[j]-(args.fold*5)]+=union_list[j]
+        all_inter[sample_class[j]-args.fold*5 - 1] += inter_list[j]
+        all_union[sample_class[j]-args.fold*5 - 1] += union_list[j]
 
-iou=0
+iou = 0
 for j in range(5):
     iou+=all_inter[j]/all_union[j]
     print(category[args.fold][j], all_inter[j]/all_union[j])

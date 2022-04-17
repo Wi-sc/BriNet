@@ -37,10 +37,10 @@ class Dataset(object):
         query_name = self.pair_list[index][0]
         support_name = self.pair_list[index][1]
         class_name = self.pair_list[index][2]  # random sample a class in this img
-        support_mask = Image.open(os.path.join(self.mask_dir, support_name+'.png')).convert('1')
-        support_img = Image.open(os.path.join(self.data_dir, support_name+'.jpg')).convert("RGB")
-        query_mask = Image.open(os.path.join(self.mask_dir, query_name+'.png')).convert('1')
-        query_img = Image.open(os.path.join(self.data_dir, query_name+'.jpg')).convert("RGB")
+        support_mask = Image.open(os.path.join(self.mask_dir, 'val', str(class_name), support_name+'.png')).convert('1')
+        support_img = Image.open(os.path.join(self.data_dir, 'JPEGImages', support_name+'.jpg')).convert("RGB")
+        query_mask = Image.open(os.path.join(self.mask_dir, 'val', str(class_name), query_name+'.png')).convert('1')
+        query_img = Image.open(os.path.join(self.data_dir, 'JPEGImages', query_name+'.jpg')).convert("RGB")
         support_img, support_mask = self.image_process(self.input_size, support_img, support_mask)
         query_img, query_mask = self.image_process(self.input_size, query_img, query_mask)
         return query_img, query_mask, support_img, support_mask, class_name
