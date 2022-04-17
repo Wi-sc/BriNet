@@ -147,7 +147,7 @@ for i_iter, batch_val in enumerate(valloader):
         final_mask = nn.functional.softmax(final_mask,dim=1)
         res_mask = model(sup_img, query_img1, final_mask[:,1:2,:,:])
         res_mask = nn.functional.interpolate(res_mask, size=(sh, sw), mode='bilinear', align_corners=True)
-        loss=cross_entropy_calc_all(res_mask, sup_mask[:,0,:,:])
+        loss = cross_entropy_calc(res_mask, sup_mask[:,0,:,:])
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
